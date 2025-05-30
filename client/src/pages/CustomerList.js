@@ -57,10 +57,11 @@ const CustomerList = () => {
 
   return (
     <Box p={2}>
+      <br />
       <Typography variant="h4" align="center" gutterBottom>
         لیستا بکرا 📋
       </Typography>
-
+      <br />
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}

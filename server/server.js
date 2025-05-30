@@ -28,3 +28,4 @@ mongoose.connect('mongodb://localhost:27017/inventoryDB')
 app.use('/api/customers', customerRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/invoices', invoiceRoutes); // ✅ Add invoice API
+

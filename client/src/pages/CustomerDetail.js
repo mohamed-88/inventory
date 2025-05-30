@@ -37,7 +37,7 @@ const CustomerDetail = () => {
       );
       setItems(filtered);
     } catch (err) {
-      console.error('Error fetching data:', err);
+      console.error('خەلەتی داتادا ئینا:', err);
     }
   };
 
@@ -77,7 +77,11 @@ const CustomerDetail = () => {
   const totalPaid = customer.payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
   const remaining = totalValue - totalPaid;
 
-  const whatsappLink = `https://wa.me/${customer.phone?.replace(/\D/g, '')}?text=Hello%20${encodeURIComponent(customer.name)},%20regarding%20your%20inventory`;
+  const pdfUrl = `https://yourserver.com/invoices/${customer._id}.pdf`;
+const waLink = `https://wa.me/?text=${encodeURIComponent(`🧾 بەرێز ${customer.name}، ئەمە پسوولەیەکەتە:\n${pdfUrl}`)}`;
+
+
+  const whatsappLink = `https://wa.me/${customer.phone?.replace(/\D/g, '')}?text=سلاف بەرێز ${encodeURIComponent(customer.name)}, سوپاس هەلبژارتناتە بو نڤێسینگەها ئەحمەد ئەلکتریک`;
   const mailLink = `mailto:${customer.email}?subject=Inventory Update`;
 
   return (
@@ -104,6 +108,7 @@ const CustomerDetail = () => {
             <Button href={whatsappLink} target="_blank" variant="contained" style={{ fontWeight: 'bold' }}>واتسئەپ 💬</Button>
           </Grid>
         )}
+
         {customer.email && (
           <Grid item>
             <Button href={mailLink} variant="contained" color="info" style={{ fontWeight: 'bold' }}>ئیمەیڵ 📧</Button>
