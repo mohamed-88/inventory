@@ -332,3 +332,15 @@ body {
   width: 60%;
   max-width: 400px;
 }
+
+
+@font-face {
+  font-family: 'KurdishSorani';
+  src: url('../public/fonts/K24KurdishBold-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+#pdf-content {
+  font-family: 'KurdishSorani', sans-serif;
+}

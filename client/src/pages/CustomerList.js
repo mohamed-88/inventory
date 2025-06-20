@@ -81,7 +81,7 @@ const CustomerList = () => {
           variant="outlined"
           size="medium"
           fullWidth
-          placeholder="🔍 لێگەریانا ناف, تەلەفون, ئیمەیڵ, نافونیشان, یان ژمارەی پسولە"
+          placeholder="🔍 لێگەریانا ناف, تەلەفون, ئیمەیڵ, نافونیشان, یان ژمارا پسولێ"
           value={search}
           onChange={handleSearchChange}
           sx={{

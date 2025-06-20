@@ -18,7 +18,7 @@ const ItemForm = () => {
   });
 
   const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [, setPreview] = useState(null);
 
   useEffect(() => {
     if (itemId && itemId !== 'new') {

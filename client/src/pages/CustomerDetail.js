@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import api from '../api';
-import './CustomerDetail.css';
+import { FaBoxOpen, FaMoneyBillWave, FaCoins, FaHashtag, FaReceipt, FaMapMarkerAlt } from 'react-icons/fa';
 
 
 const CustomerDetail = () => {
@@ -19,44 +19,43 @@ const CustomerDetail = () => {
 
   const fetchCustomerAndItems = async () => {
     try {
-      const customerRes = await api.get('/customers');
+      const [customerRes, itemsRes] = await Promise.all([
+        api.get('/customers'),
+        api.get('/items')
+      ]);
+
       const sortedCustomers = customerRes.data.sort((a, b) =>
         a.name.localeCompare(b.name, 'ku', { sensitivity: 'base' })
       );
-
-      const foundIndex = sortedCustomers.findIndex(c => c._id === id);
-      const foundCustomer = sortedCustomers[foundIndex];
+      const foundCustomer = sortedCustomers.find(c => c._id === id);
       if (foundCustomer) {
-        foundCustomer.billNo = 1000 + foundIndex + 1;
+        foundCustomer.billNo = 1000 + sortedCustomers.indexOf(foundCustomer) + 1;
         setCustomer(foundCustomer);
       }
 
-      const itemsRes = await api.get('/items');
-      const filtered = itemsRes.data.items.filter(i =>
+      const filteredItems = itemsRes.data.items.filter(i =>
         i.customerId === id || i.customerId?._id === id
       );
-      setItems(filtered);
+      setItems(filteredItems);
     } catch (err) {
-      console.error('خەلەتی داتادا ئینا:', err);
+      console.error('شکەستن ئینا دزانیاریا دا:', err);
     }
   };
+  
 
   useEffect(() => {
     fetchCustomerAndItems();
   }, [id]);
 
   const handleDeleteItem = async (itemId) => {
-    if (window.confirm('ئەرێ تە دڤێت ئەفی بابەتی مسح بکەی?')) {
+    if (window.confirm('ئەرێ تەدڤێت بابەتی ژێبەی ؟')) {
       await api.delete(`/items/${itemId}`);
-      fetchCustomerAndItems(); 
+      fetchCustomerAndItems();
     }
   };
 
   const registerPayment = async () => {
-    if (remaining <= 0) {
-      alert('كریار بێشتر بتەمامی پارە هاتیە دان.');
-      return;
-    }
+    if (remaining <= 0) return alert('پارە بتەمامی هاتیە دان.');
 
     try {
       await api.post(`/customers/${customer._id}/payments`, {
@@ -66,23 +65,79 @@ const CustomerDetail = () => {
       setPaymentAmount('');
       fetchCustomerAndItems();
     } catch (err) {
-      alert('شكەستن ئینا دپارە دانا دپاشەکەفتنی دا');
-      console.error(err);
+      console.error('خەلەتی دتومارکرنا پارە دانێ دا:', err);
+      alert('خەلەتیەك رویدا.');
     }
   };
 
-  if (!customer) return <p style={{ textAlign: 'center', marginTop: '20px' }}>جافەرێ بە...</p>;
+  if (!customer) {
+    return <Typography align="center" mt={4}>جافەرێ بە...</Typography>;
+  }
+  const mailLink = `mailto:${customer.email}?subject=Bill%20Details&body=سلاف ${customer.name}، هیڤیە زانیاریا ب بینە.`;
 
   const totalValue = items.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
   const totalPaid = customer.payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
   const remaining = totalValue - totalPaid;
-
-  const pdfUrl = `https://yourserver.com/invoices/${customer._id}.pdf`;
-const waLink = `https://wa.me/?text=${encodeURIComponent(`🧾 بەرێز ${customer.name}، ئەمە پسوولەیەکەتە:\n${pdfUrl}`)}`;
+  const totalAmount = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
 
-  const whatsappLink = `https://wa.me/${customer.phone?.replace(/\D/g, '')}?text=سلاف بەرێز ${encodeURIComponent(customer.name)}, سوپاس هەلبژارتناتە بو نڤێسینگەها ئەحمەد ئەلکتریک`;
-  const mailLink = `mailto:${customer.email}?subject=Inventory Update`;
+  const sendAllItemsViaWhatsApp = () => {
+  const phone = customer.phone?.replace(/\D/g, '');
+  if (!phone) return alert("ژمارا تەلەفۆنێ بەردەست نینە!");
+
+  const totalAmount = items.reduce((sum, item) => sum + item.totalPrice, 0);
+  const remaining = totalAmount - totalPaid;
+
+  let msg = `سلاڤ بەرێز. ${customer.name},\n\n`;
+  msg += `🧾 ژمارا پسولێ: ${customer.billNo}\n`;
+  msg += `📍 ناڤونیشان: ${customer.address || 'نینە'}\n\n`;
+
+  msg += `📦 کەل و پەل:\n`;
+
+  items.forEach((item, index) => {
+    msg += `\n${index + 1}) ${item.name}\n`;
+    msg += `🔢 ${item.quantity} x $${item.unitPrice} = $${item.totalPrice.toFixed(2)}`;
+  });
+
+  msg += `\n\n━━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `💳 بهایێ گشتی: $${totalAmount.toFixed(2)}\n`;
+  msg += `💵 پارێ هاتیە دان: $${totalPaid.toFixed(2)}\n`;
+  msg += `💰 پارێ مای: $${remaining.toFixed(2)}\n`;
+
+  // ✅ encodeURIComponent پێویستە بکاربهێنیت بۆ URL
+  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  window.open(whatsappUrl, '_blank');
+};
+
+
+const sendAllItemsViaEmail = () => {
+  if (!customer.email) {
+    alert("ئیمەیلێ کڕیاری بەردەست نینە!");
+    return;
+  }
+
+  let msg = `سلاڤ بەرێز. ${customer.name},\n\n`;
+  msg += `ژمارا پسولێ: ${customer.billNo}\n`;
+  msg += `ناڤونیشان: ${customer.address || 'نینە'}\n\n`;
+  msg += `📦 کەل و پەل:\n`;
+
+  items.forEach((item, index) => {
+    msg += `${index + 1}) ${item.name}\n`;
+    msg += `🔢 ${item.quantity}x $${item.unitPrice} = $${item.totalPrice.toFixed(2)}\n\n`;
+  });
+
+  msg += `\n\n━━━━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `💳 بهایێ گشتی: $${totalAmount.toFixed(2)}\n`;
+  msg += `💳 پارێ هاتیە دان: $${totalPaid.toFixed(2)}\n`;
+  msg += `💰 پارێ مای: $${remaining.toFixed(2)}\n`;
+  
+
+  const subject = `پێزانینیت پسولێ  ${customer.billNo}`;
+  const mailtoLink = `mailto:${customer.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(msg)}`;
+
+  window.open(mailtoLink, '_blank');
+};
+
 
   return (
     <Box sx={{ p: 2, }}>
@@ -105,15 +160,14 @@ const waLink = `https://wa.me/?text=${encodeURIComponent(`🧾 بەرێز ${cust
       <Grid container spacing={2} sx={{ mt: 2, mb: 2, justifyContent: 'center' }}>
         {customer.phone && (
           <Grid item>
-            <Button href={whatsappLink} target="_blank" variant="contained" style={{ fontWeight: 'bold' }}>واتسئەپ 💬</Button>
+            <Button onClick={sendAllItemsViaWhatsApp} target="_blank" variant="contained" style={{ fontWeight: 'bold' }}>واتسئەپ 💬</Button>
           </Grid>
         )}
 
-        {customer.email && (
-          <Grid item>
-            <Button href={mailLink} variant="contained" color="info" style={{ fontWeight: 'bold' }}>ئیمەیڵ 📧</Button>
+          <Grid>
+            <Button onClick={sendAllItemsViaEmail} variant="contained" color="info" style={{ fontWeight: 'bold' }}>ئیمەیڵ 📧</Button>
           </Grid>
-        )}
+
         <Grid item>
           <Button component={RouterLink} to={`/customer/${customer._id}/edit`} variant="contained" style={{ fontWeight: 'bold' }}>ئیدیت ✏️</Button>
         </Grid>
@@ -122,7 +176,7 @@ const waLink = `https://wa.me/?text=${encodeURIComponent(`🧾 بەرێز ${cust
         </Grid>
         <Grid item>
           {remaining > 0 ? (
-            <Button variant="contained" color="warning" onClick={() => setShowPayments(true)}>
+            <Button style={{ fontWeight: 'bold' }} variant="contained" color="warning" onClick={() => setShowPayments(true)}>
               💸 تومارکرنا پارەدانێ
             </Button>
           ) : (
@@ -143,19 +197,19 @@ const waLink = `https://wa.me/?text=${encodeURIComponent(`🧾 بەرێز ${cust
         </Button>
 
         {items.length === 0 ? (
-          <Typography>.هیچ بابەتەک بوو ئەڤێ کردارێ نینە</Typography>
+          <Typography >.هیچ بابەتەک بوو ئەڤێ کردارێ نینە</Typography>
         ) : (
           <>
 
           <TableContainer component={Paper} className="table-container">
   <Table sx={{ direction: 'rtl' }}>
     <TableHead>
-      <TableRow>
-        <TableCell>📦 نافێ گەل و پەلا</TableCell>
-        <TableCell>🔢 ژمارە</TableCell>
-        <TableCell>💵 بهایێ ئێکێ</TableCell>
-        <TableCell>💰 بهایێ گشتی</TableCell>
-        <TableCell>⚙️ کردار</TableCell>
+      <TableRow style={{ backgroundColor: '#f0f0f0' }}>
+        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>📦 نافێ گەل و پەلا</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>🔢 ژمارە</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>💵 بهایێ ئێکێ</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>💰 بهایێ گشتی</TableCell>
+        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>⚙️ کردار</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -168,11 +222,11 @@ const waLink = `https://wa.me/?text=${encodeURIComponent(`🧾 بەرێز ${cust
             transition: 'all 0.3s ease',
           }}
         >
-          <TableCell>{item.name}</TableCell>
-          <TableCell>{item.quantity}</TableCell>
-          <TableCell>${item.unitPrice}</TableCell>
-          <TableCell>${item.totalPrice.toFixed(2)}</TableCell>
-          <TableCell>
+          <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>{item.name}</TableCell>
+          <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>{item.quantity}</TableCell>
+          <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>${item.unitPrice}</TableCell>
+          <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>${item.totalPrice.toFixed(2)}</TableCell>
+          <TableCell sx={{ textAlign: 'center' }}>
             <Button
               component={RouterLink}
               to={`/customer/${customer._id}/item/${item._id}/edit`}
@@ -198,10 +252,10 @@ const waLink = `https://wa.me/?text=${encodeURIComponent(`🧾 بەرێز ${cust
       </Table>
     </TableContainer>
 
-            <Box sx={{ textAlign: 'right', mt: 2, fontWeight: 'bold' }}>
-              <Typography><strong>💳 پارێ هاتیە دان:</strong> ${totalPaid.toFixed(2)}</Typography>
-              <Typography><strong>💰 پارێ مای:</strong> ${remaining.toFixed(2)}</Typography>
-              <Typography><strong>🧾 بهایێ گشتی:</strong> ${totalValue.toFixed(2)}</Typography>
+            <Box sx={{ textAlign: 'right', mt: 2, fontWeight: 'bold', color: 'blue' }}>
+              <Typography sx={{ fontWeight: 'bold' }}><strong>💳 پارێ هاتیە دان:</strong> ${totalPaid.toFixed(2)}</Typography>
+              <Typography sx={{ fontWeight: 'bold' }}><strong>💰 پارێ مای:</strong> ${remaining.toFixed(2)}</Typography>
+              <Typography sx={{ fontWeight: 'bold' }}><strong>🧾 بهایێ گشتی:</strong> ${totalValue.toFixed(2)}</Typography>
 
               <details style={{ marginTop: '1rem' }}>
                 <summary>مێژویا دیتنا پارەدانێ 📆</summary>
