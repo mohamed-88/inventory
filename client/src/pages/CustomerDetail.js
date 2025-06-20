@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import api from '../api';
-import { FaBoxOpen, FaMoneyBillWave, FaCoins, FaHashtag, FaReceipt, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaBoxOpen, FaMoneyBillWave, FaCoins, FaHashtag, FaReceipt, FaMapMarkerAlt } from 'react-icons';
 
 
 const CustomerDetail = () => {
