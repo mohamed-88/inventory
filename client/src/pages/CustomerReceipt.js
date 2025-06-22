@@ -69,7 +69,7 @@ const CustomerReceipt = () => {
     const file = new File([blob], 'receipt.pdf', { type: 'application/pdf' });
     const url = URL.createObjectURL(file);
 
-    const message = `سڵاو بەرێز ${customer.name}، سوپاس بۆ هەلبژارتنەکەت. تکایە وەسڵی PDF لە لینکەکە داونلۆد بکە: ${url}`;
+    const message = `سلاڤ بەرێز ${customer.name}، سوپاس بۆ هەلبژارتنەکەت. تکایە وەسڵی PDF لە لینکەکە داونلۆد بکە: ${url}`;
     const phone = customer.phone?.replace(/\D/g, '');
 
     window.open(
@@ -126,14 +126,6 @@ const CustomerReceipt = () => {
       <Typography sx={{ direction: 'rtl' }}><strong>کاتژمێر:</strong> {formattedTime}</Typography>
     </Grid>
 
-        {/* <Grid item xs={6} textAlign="right">
-          <Typography><strong>بەرێز:</strong> {customer.name}</Typography>
-          <Typography><div>{customer.phone} <strong>:ژ. مۆبایل</strong></div></Typography>
-          <Typography><strong>ژمارا ( پسولێ ) :</strong> {billNo}</Typography>
-          <Typography><strong>مێژویا:</strong> {formattedDate}</Typography>
-          <Typography sx={{ direction: 'rtl' }}><strong>کاتژمێر:</strong> {formattedTime}</Typography>
-        </Grid> */}
-
         <Grid container spacing={2} mb={2}>
           <Typography style={{ textAlign: 'center' }}>
             📞 07503414123 - 📞 07507325775 - 📞 07504810978
@@ -183,17 +175,10 @@ const CustomerReceipt = () => {
       </div>
 
       <Box mt={4} display="flex" justifyContent="center" gap={2}>
-        {/* <Button
-          variant="contained"
-          color="success"
-          startIcon={<PrintIcon />}
-          onClick={sendWhatsApp}
-        >
-          نڤێسینگەی WhatsApp 📱
-        </Button> */}
-        <Button variant="contained" color="info" onClick={savePdfLocally}>
+
+        {/* <Button variant="contained" color="info" onClick={savePdfLocally}>
           Download PDF 📄
-        </Button>
+        </Button> */}
 
         <Button
           variant="contained"

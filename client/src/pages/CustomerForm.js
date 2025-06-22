@@ -65,7 +65,7 @@ const CustomerForm = () => {
       }
       navigate('/');
     } catch (err) {
-      alert('Error saving customer');
+      alert('شاشیەک دتومارکرنا کریاری دا دروست بو');
       console.error(err);
     }
   };

@@ -30,3 +30,6 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/invoices', invoiceRoutes); // ✅ Add invoice API
 
+app.get("/api/test", (req, res) => {
+  res.send("Backend is working fine ✅");
+});
