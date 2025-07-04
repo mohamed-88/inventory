@@ -16,8 +16,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<CustomerList />} />
-        <Route path="/customer/new" element={<CustomerForm />} />         {/* ✅ Add new */}
-        <Route path="/customer/:id/edit" element={<CustomerForm />} />    {/* ✅ Edit */}
+        <Route path="/customer/new" element={<CustomerForm />} />         {/* ✅ Add new ✅  */}
+        <Route path="/customer/:id/edit" element={<CustomerForm />} />    {/* ✅ Edit ✅  */}
         <Route path="/customer/:id" element={<CustomerDetail />} />
         <Route path="/item/:id" element={<ItemDetail />} />
         <Route path="/customer/:customerId/item/new" element={<ItemForm />} />
