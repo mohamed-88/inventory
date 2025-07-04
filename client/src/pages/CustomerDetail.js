@@ -89,20 +89,20 @@ const CustomerDetail = () => {
   const remaining = totalAmount - totalPaid;
 
   let msg = `سلاڤ بەرێز. ${customer.name},\n\n`;
-  msg += `🧾 ژمارا پسولێ: ${customer.billNo}\n`;
-  msg += `📍 ناڤونیشان: ${customer.address || 'نینە'}\n\n`;
+  msg += `ژمارا پسولێ: ${customer.billNo}\n`;
+  msg += `ناڤونیشان: ${customer.address || 'نینە'}\n\n`;
 
-  msg += `📦 کەل و پەل:\n`;
+  msg += `کەل و پەل:\n`;
 
   items.forEach((item, index) => {
     msg += `\n${index + 1}) ${item.name}\n`;
-    msg += `🔢 ${item.quantity} x $${item.unitPrice} = $${item.totalPrice.toFixed(2)}`;
+    msg += `${item.quantity} x $${item.unitPrice} = $${item.totalPrice.toFixed(2)}`;
   });
 
   msg += `\n\n━━━━━━━━━━━━━━━━━━━━━━\n`;
-  msg += `💳 بهایێ گشتی: $${totalAmount.toFixed(2)}\n`;
-  msg += `💵 پارێ هاتیە دان: $${totalPaid.toFixed(2)}\n`;
-  msg += `💰 پارێ مای: $${remaining.toFixed(2)}\n`;
+  msg += `بهایێ گشتی: $${totalAmount.toFixed(2)}\n`;
+  msg += `پارێ هاتیە دان: $${totalPaid.toFixed(2)}\n`;
+  msg += `پارێ مای: $${remaining.toFixed(2)}\n`;
 
   // ✅ encodeURIComponent پێویستە بکاربهێنیت بۆ URL
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
@@ -116,9 +116,9 @@ const sendAllItemsViaEmail = () => {
     return;
   }
 
-  let msg = `سلاڤ بەرێز. ${customer.name},\n\n`;
-  msg += `ژمارا پسولێ: ${customer.billNo}\n`;
-  msg += `ناڤونیشان: ${customer.address || 'نینە'}\n\n`;
+  let msg = `👤 سلاڤ بەرێز. ${customer.name},\n\n`;
+  msg += `🧾 ژمارا پسولێ: ${customer.billNo}\n`;
+  msg += `📍 ناڤونیشان: ${customer.address || 'نینە'}\n\n`;
   msg += `📦 کەل و پەل:\n`;
 
   items.forEach((item, index) => {
