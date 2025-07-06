@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // Tenê baseURL diguhere û dibite '/api'
-  baseURL: '/api', 
+  baseURL: '/api',
 });
 
 export default api;
