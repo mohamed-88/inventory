@@ -14,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT; // No need for "|| 5000" because it's in your .env
 const MONGO_URI = process.env.MONGO_URI;
 
-// Import Routes
+// Import Routes ✅
 const customerRoutes = require('./routes/Customer');
 const itemRoutes = require('./routes/Item');
 const invoiceRoutes = require('./routes/Invoice');
