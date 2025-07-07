@@ -34,6 +34,16 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/invoices', invoiceRoutes);
 
+// =======================================================
+//          TÊSTA TEŞXÎSÊ (DIAGNOSTIC TEST)
+// =======================================================
+app.get('/api/test', (req, res) => {
+  console.log('DAXWAZA TÊSTÊ GEHEŞT!');
+  res.json({ message: 'Pîroz be! Sêrvěr zindî ye û bersiv da!' });
+});
+// =======================================================
+
+
 // FATAL ERROR Check: Ensure MONGO_URI is defined before trying to connect
 if (!MONGO_URI) {
   console.error('FATAL ERROR: MONGO_URI is not defined in your .env file or environment variables.');
