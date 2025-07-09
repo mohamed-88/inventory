@@ -5,10 +5,9 @@ import tablelogo from '../assets/tablelogo.png';
 import ahmedtype from '../assets/ahmedtype.png';
 import { Container, Typography, Box, Button, Grid } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+// import html2canvas from 'html2canvas'; // 1. Ev hate jêbirin ji ber ku bikarnehatî ye
+// import jsPDF from 'jspdf'; // 2. Ev hate jêbirin ji ber ku bikarnehatî ye
 import '../pages/CustomerReceipt.css';
-
 
 const CustomerReceipt = () => {
   const { id } = useParams();
@@ -55,46 +54,11 @@ const CustomerReceipt = () => {
   const formattedDate = currentDateTime.toLocaleDateString();
   const formattedTime = currentDateTime.toLocaleTimeString();
 
-  const sendWhatsApp = async () => {
-    const input = document.getElementById('pdf-content');
-    const canvas = await html2canvas(input, { scale: 2 });
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    const blob = pdf.output('blob');
+  // 3. Fenkşina 'sendWhatsApp' hate jêbirin ji ber ku bikarnehatî ye
+  // const sendWhatsApp = async () => { ... };
 
-    const file = new File([blob], 'receipt.pdf', { type: 'application/pdf' });
-    const url = URL.createObjectURL(file);
-
-    const message = `سلاڤ بەرێز ${customer.name}، سوپاس بۆ هەلبژارتنەکەت. تکایە وەسڵی PDF لە لینکەکە داونلۆد بکە: ${url}`;
-    const phone = customer.phone?.replace(/\D/g, '');
-
-    window.open(
-      `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
-      '_blank'
-    );
-  };
-
-  const savePdfLocally = async () => {
-    const input = document.getElementById('pdf-content');
-    const canvas = await html2canvas(input, { scale: 2 });
-    const imgData = canvas.toDataURL('image/png');
-
-    const imgProps = {
-      width: canvas.width,
-      height: canvas.height,
-    };
-
-    const pdfWidth = 210; // A4 mm
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    const pdf = new jsPDF('p', 'mm', [pdfWidth, pdfHeight]);
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`پسولا ${customer.name}.pdf`);
-  };
+  // 4. Fenkşina 'savePdfLocally' hate jêbirin ji ber ku bikarnehatî ye
+  // const savePdfLocally = async () => { ... };
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4, fontFamily: "'Noto Naskh Arabic', sans-serif" }}>
@@ -118,13 +82,13 @@ const CustomerReceipt = () => {
           </Typography>
         </Box>
 
-      <Grid item xs={6} textAlign="right" sx={{ fontFamily: 'KurdishSorani', fontWeight: 'bold' }}>
-      <Typography><strong>بەرێز:</strong> {customer.name}</Typography>
-      <Typography><div>{customer.phone} <strong>:ژ. مۆبایل</strong></div></Typography>
-      <Typography><strong>ژمارا ( پسولێ ) :</strong> {billNo}</Typography>
-      <Typography><strong>مێژویا:</strong> {formattedDate}</Typography>
-      <Typography sx={{ direction: 'rtl' }}><strong>کاتژمێر:</strong> {formattedTime}</Typography>
-    </Grid>
+        <Grid item xs={6} textAlign="right" sx={{ fontFamily: 'KurdishSorani', fontWeight: 'bold' }}>
+          <Typography><strong>بەرێز:</strong> {customer.name}</Typography>
+          <Typography><div>{customer.phone} <strong>:ژ. مۆبایل</strong></div></Typography>
+          <Typography><strong>ژمارا ( پسولێ ) :</strong> {billNo}</Typography>
+          <Typography><strong>مێژویا:</strong> {formattedDate}</Typography>
+          <Typography sx={{ direction: 'rtl' }}><strong>کاتژمێر:</strong> {formattedTime}</Typography>
+        </Grid>
 
         <Grid container spacing={2} mb={2}>
           <Typography style={{ textAlign: 'center' }}>
@@ -175,11 +139,6 @@ const CustomerReceipt = () => {
       </div>
 
       <Box mt={4} display="flex" justifyContent="center" gap={2}>
-
-        {/* <Button variant="contained" color="info" onClick={savePdfLocally}>
-          Download PDF 📄
-        </Button> */}
-
         <Button
           variant="contained"
           color="primary"

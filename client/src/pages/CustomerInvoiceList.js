@@ -54,8 +54,8 @@ const CustomerInvoiceList = () => {
 
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       
-      // Convert PDF to base64
-      const pdfData = pdf.output('datauristring');
+      // 1. Ev rêza bêmifa hate jêbirin, ji ber ku 'pdfData' nehatiye bikaranîn.
+      // const pdfData = pdf.output('datauristring');
       
       // Create WhatsApp message
       const message = 

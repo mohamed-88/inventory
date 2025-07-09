@@ -10,7 +10,9 @@ const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [selectedLetter, setSelectedLetter] = useState('');
+  
+  // 1. Ev rêza bêmifa ya 'selectedLetter' bi temamî hate jêbirin.
+  // const [selectedLetter, setSelectedLetter] = useState('');
 
   useEffect(() => {
     api.get('/customers').then((res) => {
@@ -27,32 +29,21 @@ const CustomerList = () => {
     setPage(1);
   };
 
-  const handleLetterClick = (letter) => {
-    setSelectedLetter(letter);
-    setPage(1);
-  };
-
   const filteredCustomers = customers.filter((c) => {
     const lowerSearch = search.toLowerCase();
-    const matchesSearch =
+    return (
       c.name.toLowerCase().includes(lowerSearch) ||
       c.phone?.toLowerCase().includes(lowerSearch) ||
       c.email?.toLowerCase().includes(lowerSearch) ||
       c.address?.toLowerCase().includes(lowerSearch) ||
-      c.billNo?.toString().includes(lowerSearch);
-
-    const matchesLetter = selectedLetter === '' || c.name.startsWith(selectedLetter);
-    return matchesSearch && matchesLetter;
+      c.billNo?.toString().includes(lowerSearch)
+    );
   });
 
   const totalPages = Math.ceil(filteredCustomers.length / ITEMS_PER_PAGE);
   const visibleCustomers = filteredCustomers.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
-  );
-
-  const letters = Array.from(
-    new Set(customers.map((c) => c.name[0]?.toUpperCase()).sort((a, b) => a.localeCompare(b)))
   );
 
   return (
@@ -96,17 +87,15 @@ const CustomerList = () => {
           }}
         />
         <Button
-        component={Link}
-        to="/customer/new"
-        variant="contained"
-        color="primary"
-        size="medium"
-        className="customer-add-button"
-      >
-        زێدەکرنا بکری ➕
-      </Button>
-
-
+          component={Link}
+          to="/customer/new"
+          variant="contained"
+          color="primary"
+          size="medium"
+          className="customer-add-button"
+        >
+          زێدەکرنا بکری ➕
+        </Button>
       </Stack>
 
       <TableContainer component={Paper} className="table-container" style={{ direction: 'rtl' }}>
@@ -134,8 +123,8 @@ const CustomerList = () => {
                   <TableCell style={{ textAlign: 'center' }}>{c.name}</TableCell>
                   <TableCell style={{ textAlign: 'center', direction: 'ltr' }}>{c.phone}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{c.address}</TableCell>
-                   <TableCell style={{ textAlign: 'center' }}>{c.email}</TableCell>
-                   <TableCell style={{ textAlign: 'center' }}>{c.billNo}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{c.email}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{c.billNo}</TableCell>
                   <TableCell>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
                       <Button
