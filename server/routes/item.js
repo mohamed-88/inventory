@@ -71,7 +71,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
     // Convert quantity and unitPrice to numbers
     data.quantity = Number(data.quantity);
     data.unitPrice = Number(data.unitPrice);
-    data.totalPrice = data.quantity * data.unitPrice; // ✅ recalculate total
+    data.totalPrice = data.quantity * data.unitPrice; // ✅ recalculate total ✅
 
     if (req.file) {
       data.imageUrl = `/uploads/${req.file.filename}`;
