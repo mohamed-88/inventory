@@ -1,69 +1,62 @@
-// Load environment variables from .env file
-require('dotenv').config(); 
-
-// Import necessary packages
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 
-// Initialize the app
 const app = express();
-
-// Define the PORT and MONGO_URI from environment variables
-const PORT = process.env.PORT; // No need for "|| 5000" because it's in your .env
+const PORT = process.env.PORT || 5000; // Dema li ser komputerê ye dê 5000 bikar bîne
 const MONGO_URI = process.env.MONGO_URI;
 
-// Import Routes ✅
 const customerRoutes = require('./routes/Customer');
 const itemRoutes = require('./routes/Item');
 const invoiceRoutes = require('./routes/Invoice');
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// CORS ji bo herduyan (localhost û Vercel)
+const allowedOrigins = [
+  'http://localhost:3000', // Ji bo testa li ser komputerê
+  'https://ahmed-electric-receipts.vercel.app' // Lînka te ya Vercel
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 
-// Root/Test Route
+app.use(express.json());
+
 app.get("/", (req, res) => {
-  res.status(200).send("Inventory Backend is running and healthy! ✅");
+  res.status(200).send("Backend is running! ✅");
 });
 
-// API Routes
 app.use('/api/customers', customerRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/invoices', invoiceRoutes);
 
-// =======================================================
-//          TÊSTA TEŞXÎSÊ (DIAGNOSTIC TEST)
-// =======================================================
-app.get('/api/test', (req, res) => {
-  console.log('DAXWAZA TÊSTÊ GEHEŞT!');
-  res.json({ message: 'Pîroz be! Sêrvěr zindî ye û bersiv da!' });
-});
-// =======================================================
-
-
-// FATAL ERROR Check: Ensure MONGO_URI is defined before trying to connect
 if (!MONGO_URI) {
-  console.error('FATAL ERROR: MONGO_URI is not defined in your .env file or environment variables.');
+  console.error('FATAL ERROR: MONGO_URI is not defined.');
   process.exit(1);
 }
 
-// MongoDB Connection and Server Listening
 mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log('✅ Successfully connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`🚀 Server is listening on port: ${PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error('❌ Failed to connect to MongoDB:', err);
-    process.exit(1);
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
+
+// Ev ji bo Vercel e, divê li derveyî .then be
+module.exports = app; 
+
+// Ev tenê ji bo testa li ser komputerê ye
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is listening locally on port: ${PORT}`);
   });
-  
-module.exports = app;
+}
+
+
 
 // const express = require('express');
 // const mongoose = require('mongoose');
