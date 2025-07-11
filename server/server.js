@@ -1,66 +1,61 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
-const path = require('path');
+const cors = require('cors'); // Piştrast be ku ev importkirî ye
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-// 1. Rêyên importkirinê piştrast bike (bi .js)
+// Rêyên importkirinê
 const customerRoutes = require('./routes/Customer.js');
 const itemRoutes = require('./routes/Item.js');
 const invoiceRoutes = require('./routes/Invoice.js');
 
-// CORS ji bo herduyan (localhost û Vercel)
-const allowedOrigins = [
-  'http://localhost:3000', // Ji bo testa li ser komputerê
-  'https://ahmed-electric-receipts.vercel.app' // Lînka te ya Vercel
-];
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+// ===============================================
+//          GUHERTINA HERÎ GIRÎNG
+// ===============================================
+// Ev rê dide her kesî ku daxwaziyan bişîne. Ev ê pirsgirêka CORS çareser bike.
+app.use(cors());
+// ===============================================
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.status(200).send("Backend is running! ✅");
-});
-
-// 2. Rêyên API-yê li vir kom bike
+// Rêyên API-yê
 const apiRouter = express.Router();
 apiRouter.use('/customers', customerRoutes);
 apiRouter.use('/items', itemRoutes);
 apiRouter.use('/invoices', invoiceRoutes);
 
-// 3. Tenê carekê /api bikar bîne
+// Tenê carekê /api bikar bîne
 app.use('/api', apiRouter);
 
+// Rêya testê
+app.get("/", (req, res) => {
+  res.status(200).send("Backend is running! ✅");
+});
+
+// Piştrastkirina MONGO_URI
 if (!MONGO_URI) {
   console.error('FATAL ERROR: MONGO_URI is not defined.');
   process.exit(1);
 }
 
+// Girêdana bi MongoDB
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
+  .then(() => {
+    console.log('✅ Connected to MongoDB');
+    // Tenê dema li ser komputerê ye serverê bixebitîne
+    if (process.env.NODE_ENV !== 'production') {
+      app.listen(PORT, () => {
+        console.log(`🚀 Server is listening locally on port: ${PORT}`);
+      });
+    }
+  })
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Ev ji bo Vercel e, divê li derveyî .then be
-module.exports = app; 
-
-// Ev tenê ji bo testa li ser komputerê ye
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server is listening locally on port: ${PORT}`);
-  });
-}
+// Ji bo Render an platformên din ên serverless
+module.exports = app;
 
 
 
