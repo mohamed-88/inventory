@@ -1,9 +1,7 @@
 import axios from 'axios';
-
 const api = axios.create({
-   baseURL: 'https://..../api' // ل جهێ '...' لینکێ خۆ یێ deploy کری بدانە
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api'
 });
-
 export default api;
 
 
