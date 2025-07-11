@@ -5,12 +5,13 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 5000; // Dema li ser komputerê ye dê 5000 bikar bîne
+const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-const customerRoutes = require('./routes/Customer');
-const itemRoutes = require('./routes/Item');
-const invoiceRoutes = require('./routes/Invoice');
+// 1. Rêyên importkirinê piştrast bike (bi .js)
+const customerRoutes = require('./routes/Customer.js');
+const itemRoutes = require('./routes/Item.js');
+const invoiceRoutes = require('./routes/Invoice.js');
 
 // CORS ji bo herduyan (localhost û Vercel)
 const allowedOrigins = [
@@ -33,9 +34,14 @@ app.get("/", (req, res) => {
   res.status(200).send("Backend is running! ✅");
 });
 
-app.use('/api/customers', customerRoutes);
-app.use('/api/items', itemRoutes);
-app.use('/api/invoices', invoiceRoutes);
+// 2. Rêyên API-yê li vir kom bike
+const apiRouter = express.Router();
+apiRouter.use('/customers', customerRoutes);
+apiRouter.use('/items', itemRoutes);
+apiRouter.use('/invoices', invoiceRoutes);
+
+// 3. Tenê carekê /api bikar bîne
+app.use('/api', apiRouter);
 
 if (!MONGO_URI) {
   console.error('FATAL ERROR: MONGO_URI is not defined.');
