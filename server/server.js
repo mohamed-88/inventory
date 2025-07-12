@@ -1,61 +1,42 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Piştrast be ku ev importkirî ye
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-// Rêyên importkirinê
-const customerRoutes = require('./routes/Customer.js');
-const itemRoutes = require('./routes/Item.js');
-const invoiceRoutes = require('./routes/Invoice.js');
-
-// ===============================================
-//          GUHERTINA HERÎ GIRÎNG
-// ===============================================
-// Ev rê dide her kesî ku daxwaziyan bişîne. Ev ê pirsgirêka CORS çareser bike.
+// Middleware
 app.use(cors());
-// ===============================================
-
 app.use(express.json());
 
-// Rêyên API-yê
-const apiRouter = express.Router();
-apiRouter.use('/customers', customerRoutes);
-apiRouter.use('/items', itemRoutes);
-apiRouter.use('/invoices', invoiceRoutes);
+// Routes
+const customerRoutes = require('./routes/Customer');
+const itemRoutes = require('./routes/Item');
+const invoiceRoutes = require('./routes/Invoice');
 
-// Tenê carekê /api bikar bîne
-app.use('/api', apiRouter);
+app.use('/api/customers', customerRoutes);
+app.use('/api/items', itemRoutes);
+app.use('/api/invoices', invoiceRoutes);
 
-// Rêya testê
+// Test Route
 app.get("/", (req, res) => {
-  res.status(200).send("Backend is running! ✅");
+  res.send("✅ Backend is working!");
 });
-
-// Piştrastkirina MONGO_URI
-if (!MONGO_URI) {
-  console.error('FATAL ERROR: MONGO_URI is not defined.');
-  process.exit(1);
-}
 
 // Girêdana bi MongoDB
 mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log('✅ Connected to MongoDB');
-    // Tenê dema li ser komputerê ye serverê bixebitîne
-    if (process.env.NODE_ENV !== 'production') {
-      app.listen(PORT, () => {
-        console.log(`🚀 Server is listening locally on port: ${PORT}`);
-      });
-    }
-  })
+  .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Ji bo Render an platformên din ên serverless
+// Destpêkirina serverê
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port: ${PORT}`);
+});
+
 module.exports = app;
+
 
 
 
